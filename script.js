@@ -134,6 +134,39 @@ const app = {
 
         return mockCities.filter(city => city.name.toLowerCase().includes(query.toLowerCase()) || 
             city.country.toLowerCase().includes(query.toLowerCase()));
+    },
+
+    displaySuggestions(cities) {
+        const suggestionDiv = document.getElementById('suggestion');
+
+        if (cities.length === 0) {
+            suggestionDiv.innerHTML = '';
+            return;
+        }
+
+        suggestionDiv.innerHTML = cities.map(city => 
+            `
+                <div class="suggestion-item" onclick="app.selectCity(${JSON.stringify(city).replace(/"/g, '$quot;')})">
+                    <strong>${city.name}</strong>, ${city.country}
+                </div>
+            `
+        ).join(' ');
+    },
+
+    async selectCity(city) {
+        document.getElementById('suggestions').innerHTML = '';
+
+        document.getElementById('city-search').value = `${city.name}, ${city.country}`;
+
+        this.state.currentCity = city;
+
+        documebt.getElementById("content").classList.remove("hidden");
+
+        await Promise.all([
+            this.fetchWeather(city),
+            this.fetchImages(city.name),
+            this.initMap(city.latitude, city.longitude)
+        ])
     }
 
 };
