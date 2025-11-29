@@ -157,10 +157,10 @@ input:focus {
 
 .suggestions {
     position: absolute;
-    top: 90%;
+    top: 110%;
     background: rgba(255, 255, 255, 0.95);
     padding: 2em;
-    width: 90%;
+    width: 100%;
     left: 0;
     right: 0;
     margin: 0 auto;
@@ -170,6 +170,17 @@ input:focus {
     z-index: 100;
 }
 
+.suggestion-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    color: #333;
+    transition: background 0.2s;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-item:hover {
+    background: rgba(102, 126, 234, 0.2);
+}
 
 main {
     width: 100%;

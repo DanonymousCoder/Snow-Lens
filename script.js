@@ -4,8 +4,8 @@ const themes = document.querySelectorAll(".types a");
 const app = {
 
     API_KEYS : {
-        openweather: '',
-        unsplash: '',
+        openweather: 'fa6c31f7a11d128e7d2425c9d934dfee',
+        unsplash: 'RouDBudGLDcOO9sjBIZvd3ZQyBzEMbVtSZ-i6x7sY5c',
         geodb: ''
     },
 
@@ -166,7 +166,28 @@ const app = {
             this.fetchWeather(city),
             this.fetchImages(city.name),
             this.initMap(city.latitude, city.longitude)
-        ])
+        ]);
+
+        // this.updateFavouriteBtn();
+    },
+
+    async fetchWeather(city) {
+        try {
+            const mockWeather = {
+                temp: -5 + Math.random() * 10,
+                description: 'Light snow',
+                icon: '13d',
+                humidity: 60 + Math.random() * 30,
+                wind_speed: 5 + Math.random() * 15,
+                snow: Math.random() > 0.5 ? {'1h': Math.random() * 5} : null
+            };
+
+            this.state.weatherData = mockWeather;
+
+            // this.displayWeather(mockWeather);
+        } catch (error) {
+            this.showError("Failed to fetch weather data")
+        }
     }
 
 };
