@@ -3,11 +3,7 @@ const themes = document.querySelectorAll(".types a");
 
 const app = {
 
-    API_KEYS : {
-        openweather: 'fa6c31f7a11d128e7d2425c9d934dfee',
-        unsplash: 'RouDBudGLDcOO9sjBIZvd3ZQyBzEMbVtSZ-i6x7sY5c',
-        geodb: ''
-    },
+    
 
     state: {
         currentCity: null,
@@ -92,7 +88,8 @@ const app = {
         }, 300)
     },
 
-    async fetchCitySuggestions(query) {
+    /**
+     * async fetchCitySuggestions(query) {
         const mockCities = [
             {
                 id: 1,
@@ -135,9 +132,26 @@ const app = {
         return mockCities.filter(city => city.name.toLowerCase().includes(query.toLowerCase()) || 
             city.country.toLowerCase().includes(query.toLowerCase()));
     },
+     */
+
+    async fetchCitySuggestions(query) {
+        const limit = 5;
+        const url = `https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=${limit}&appid=${this.API_KEYS.openweather}`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        return data.map(city => ({
+            name: city.name,
+            country: city.country,
+            latitude: city.lat,
+            longitude: city.lon,
+            state: city.state
+        }));
+    },
 
     displaySuggestions(cities) {
-        const suggestionDiv = document.getElementById('suggestion');
+        const suggestionDiv = document.getElementById('suggestions');
 
         if (cities.length === 0) {
             suggestionDiv.innerHTML = '';
@@ -160,7 +174,7 @@ const app = {
 
         this.state.currentCity = city;
 
-        documebt.getElementById("content").classList.remove("hidden");
+        document.getElementById("content").classList.remove("hidden");
 
         await Promise.all([
             this.fetchWeather(city),
@@ -171,7 +185,8 @@ const app = {
         // this.updateFavouriteBtn();
     },
 
-    async fetchWeather(city) {
+    /**
+     * async fetchWeather(city) {
         try {
             const mockWeather = {
                 temp: -5 + Math.random() * 10,
@@ -189,7 +204,74 @@ const app = {
             this.showError("Failed to fetch weather data")
         }
     }
+     */
+    
+    async fetchWeather(city) {
+        try {
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${city.latitude}&lon=${city.longitude}&units=metric&appid=${this.API_KEYS.openweather}`;
+            const response = await fetch(url);
+
+            if (!response.ok)
+                throw new error(`HTTP error, status: ${response.status}`);
+
+            const data = await response.json();
+
+            const weatherData = {
+                temp: data.main.temp,
+                feels_like:data.main.feels_like ,
+                humidity: data.main.humidity,
+                wind_speed: data.wind.speed,
+                description: data.weather[0].description,
+                icon: data.weather[0].icon,
+                snow: data.snow || null
+            }
+
+            this.state.weatherData = data;
+
+            // call function to display weather
+            console.log("Weather Data: ", data);
+        } catch (error) {
+            this.showError("Failed to fetch weather data ", data);
+            console.error("Failed to fetch weather");
+        }
+    },
+
+    async fetchImages(query) {
+        try {
+            const url = `https://api.unsplash.com/search/photos?query=4{query}&per_page=5&client_id=${this.API_KEYS.unsplash}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            console.log("Images: ", data.results);
+        } catch(error) {
+            console.error("Failed to fetch images", error);
+        }
+    },
+
+    displayWeather(weather) {
+        const temp = temp.state.isCelcius ?
+            weather.temp :
+            (weather.temp * 9/5) + 32;
+
+        const weatherHTML = `
+            <div class='weather-icon'></div>
+            <h2>${this.state.currentCity.name}</h2>
+            <p>${weather.description}</p>
+            <div class='temperature'>${temp.toFixed(1)}${unit}</div>
+
+            <div class='weather-details'>
+                <div class='detail-item'>
+                    <h4 class='detail-label'>Humidity</h4>
+                    <p class='detail-value'>${weather.humidity.toFixed(0)}%</p>
+                </div>
+            </div>
+        `
+
+        document.getElementById('weatherContent').innerHTML = weatherHTML;
+    }
 
 };
 
 document.addEventListener('DOMContentLoaded', () => app.init());
+
+app.fetchCitySuggestions("Lagos").then(console.log);
