@@ -3,7 +3,7 @@ const themes = document.querySelectorAll(".types a");
 
 const app = {
 
-    
+    API_KEYS: ENV.API_KEYS,
 
     state: {
         currentCity: null,
@@ -259,10 +259,23 @@ const app = {
             <p>${weather.description}</p>
             <div class='temperature'>${temp.toFixed(1)}${unit}</div>
 
+            <div class='temp-toggle'>
+                <button class='toggle-btn ${this.state.isCelcius ? 'active': ''}' onClick='app.toggleTempUnit(true)'>C</button>
+                <button class='toggle-btn ${!this.state.isCelcius ? 'active': ''}' onClick='app.toggleTempUnit(false)'>F</button>
+            </div>
+
             <div class='weather-details'>
                 <div class='detail-item'>
                     <h4 class='detail-label'>Humidity</h4>
                     <p class='detail-value'>${weather.humidity.toFixed(0)}%</p>
+                </div>
+                <div class='detail-item'>
+                    <h4 class='detail-label'>Wind</h4>
+                    <p class='detail-value'>${weather.wind_speed.toFixed(1)} m/s</p>
+                </div>
+                <div class='detail-item'>
+                    <h4 class='detail-label'>Snow</h4>
+                    <p class='detail-value'>${weather.snow ? weather.snow['1h'].toFixed(1) + 'mm': 'None'}</p>
                 </div>
             </div>
         `
@@ -274,4 +287,4 @@ const app = {
 
 document.addEventListener('DOMContentLoaded', () => app.init());
 
-app.fetchCitySuggestions("Lagos").then(console.log);
+// app.fetchCitySuggestions("Lagos").then(console.log);

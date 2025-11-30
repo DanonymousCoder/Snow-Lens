@@ -1,9 +1,3 @@
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-}
-
 :root {
     --snow-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --aurora-bg: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
@@ -12,6 +6,12 @@
     --glass-border: rgb(255, 255, 255, 0.2);
     --text-primary: #FFFFFF;
     --text--secondary: rgb(255, 255, 255, 0.8);
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -49,13 +49,21 @@ a {
 
 header {
     width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-top: 3em;
 }
 
 nav {
     display: flex;
     justify-content: space-between;
-    width: 100%;
+    align-items: center;
+    width: 80%;
+    position: fixed;
+    background: var(--glass-bg);
+    padding: 2em 3em;
+    border-radius: 30px;
 }
 
 .logo h1 {
@@ -74,6 +82,8 @@ nav {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 100%;
+    margin-top: 8em;
 }
 
 .hero .text {
@@ -188,7 +198,7 @@ main {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 3em;
+    gap: 1em;
 }
 
 .main-grid {
@@ -203,8 +213,9 @@ main {
 
 .glass {
     background: var(--glass-bg);
-    padding: 1em 3em;
+    padding: 3em;
     width: 80%;
+    border-radius: 15px;
 }
 
 .weather-card {
@@ -212,10 +223,84 @@ main {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-top: 3em;
+}
+
+.weather-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.temp-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+    align-items: center;
+}
+
+.toggle-btn {
+    padding: .5em 1.5em;
+    border-radius: 20px;
+    border: none;
+    margin-top: 2em;
+    background: var(--glass-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+}
+
+.toggle-btn.active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.weather-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2em;
+    width: 100%;
+    margin-top: 2em;
+}
+
+.detail-item {
+    background: var(--glass-bg);
+    padding: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+    border-radius: 15px;
+}
+
+.detail-label {
+    color: var(--text-secondary);
+    opacity: .70;
+    letter-spacing: 1.5;
 }
 
 .plan {
     margin-top: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 3em;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5em;
+}
+
+.plan button {
+    width: 50%;
+    padding: 1.5rem;
+    border-radius: 15px;
+    border: none;
+    color: #000000;
+    font-size: 1.2rem;
 }
 
 .snowflake {
