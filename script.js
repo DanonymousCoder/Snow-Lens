@@ -1,4 +1,5 @@
 const themes = document.querySelectorAll(".types a");
+const container = document.querySelector('.container');
 
 
 const app = {
@@ -18,7 +19,7 @@ const app = {
         console.log("App up and running...");
         this.createSnowFlakes();
         this.setupEventListeners();
-        // this.loadFavourites();
+        this.loadFavourites();
     },
 
     createSnowFlakes() {
@@ -30,13 +31,13 @@ const app = {
             snowflake.className = 'snowflake';
             snowflake.innerHTML = '❄';
 
-            snowflake.style.left = `${Math.random() * 100}%`;
+            snowflake.style.left = `${Math.random() * 120}%`;
             snowflake.style.animationDuration = `${Math.random() * 3 + 2}s`;
             snowflake.style.animationDelay = `${Math.random() + 2}s`;
 
             snowflake.style.opacity = `${Math.random() * 0.6 + 0.4}`
 
-            document.body.appendChild(snowflake);
+            container.appendChild(snowflake);
         }
 
     },
@@ -74,6 +75,7 @@ const app = {
 
         if (query.length < 2) {
             document.getElementById('suggestions').innerHTML = '';
+            document.getElementById('suggestions').classList.add('hidden');
             return;
         }
 
@@ -155,20 +157,24 @@ const app = {
 
         if (cities.length === 0) {
             suggestionDiv.innerHTML = '';
+            suggestionDiv.classList.add('hidden');
             return;
         }
 
         suggestionDiv.innerHTML = cities.map(city => 
             `
-                <div class="suggestion-item" onclick="app.selectCity(${JSON.stringify(city).replace(/"/g, '$quot;')})">
+                <div class="suggestion-item" onclick="app.selectCity(${JSON.stringify(city).replace(/"/g, '&quot;')})">
                     <strong>${city.name}</strong>, ${city.country}
                 </div>
             `
         ).join(' ');
+
+        suggestionDiv.classList.remove('hidden');
     },
 
     async selectCity(city) {
         document.getElementById('suggestions').innerHTML = '';
+        document.getElementById('suggestions').classList.add('hidden');
 
         document.getElementById('city-search').value = `${city.name}, ${city.country}`;
 
@@ -182,7 +188,7 @@ const app = {
             this.initMap(city.latitude, city.longitude)
         ]);
 
-        // this.updateFavouriteBtn();
+        this.updateFavouriteBtn();
     },
 
     /**
@@ -212,62 +218,84 @@ const app = {
             const response = await fetch(url);
 
             if (!response.ok)
-                throw new error(`HTTP error, status: ${response.status}`);
+                throw new Error(`HTTP error, status: ${response.status}`);
 
             const data = await response.json();
 
             const weatherData = {
                 temp: data.main.temp,
-                feels_like:data.main.feels_like ,
+                feels_like: data.main.feels_like,
                 humidity: data.main.humidity,
                 wind_speed: data.wind.speed,
                 description: data.weather[0].description,
                 icon: data.weather[0].icon,
                 snow: data.snow || null
-            }
+            };
 
-            this.state.weatherData = data;
+            this.state.weatherData = weatherData;
+            this.displayWeather(weatherData);
 
-            // call function to display weather
-            console.log("Weather Data: ", data);
+            console.log("Weather Data: ", weatherData);
         } catch (error) {
-            this.showError("Failed to fetch weather data ", data);
-            console.error("Failed to fetch weather");
+            this.showError("Failed to fetch weather data");
+            console.error("Failed to fetch weather", error);
         }
     },
 
-    async fetchImages(query) {
+    async fetchImages(cityName) {
         try {
-            const url = `https://api.unsplash.com/search/photos?query=4{query}&per_page=5&client_id=${this.API_KEYS.unsplash}`;
+            const searchQuery = `winter ${cityName}`;
+            const url = `https://api.unsplash.com/search/photos?query=${searchQuery}&per_page=5&client_id=${this.API_KEYS.unsplash}`;
+
             const response = await fetch(url);
             const data = await response.json();
 
-            console.log("Images: ", data.results);
+            const images = data.results.map(photo => photo.urls.regular);
+
+            this.displayGallery(images);
         } catch(error) {
-            console.error("Failed to fetch images", error);
+            console.error("Failed to fetch images:", error);
         }
     },
 
+    displayGallery(images) {
+        const galleryHTML = `
+            <div class='hero-image'>
+                <img src='${images[0]}' alt='Winter destination' />
+            </div>
+            <div class='gallery-grid'>
+                ${images.slice(1).map(img => `
+                        <div class='gallery-item'>
+                            <img src='${img}' alt='Winter image' />
+                        </div>
+                    `).join(' ')}
+            </div>
+        `;
+
+        document.getElementById('gallerysection').innerHTML = galleryHTML;
+    },
+
     displayWeather(weather) {
-        const temp = temp.state.isCelcius ?
-            weather.temp :
-            (weather.temp * 9/5) + 32;
+        const temp = this.state.isCelcius ? weather.temp : (weather.temp * 9/5) + 32;
+        const unit = this.state.isCelcius ? '°C' : '°F';
 
         const weatherHTML = `
-            <div class='weather-icon'></div>
+            <div class='weather-icon'>
+                <img src='http://openweathermap.org/img/wn/${weather.icon}@2x.png' alt='${weather.description}'>
+            </div>
             <h2>${this.state.currentCity.name}</h2>
-            <p>${weather.description}</p>
-            <div class='temperature'>${temp.toFixed(1)}${unit}</div>
+            <p class='weather-desc'>${weather.description}</p>
+            <div class='temperature'>${Math.round(temp)}${unit}</div>
 
             <div class='temp-toggle'>
-                <button class='toggle-btn ${this.state.isCelcius ? 'active': ''}' onClick='app.toggleTempUnit(true)'>C</button>
-                <button class='toggle-btn ${!this.state.isCelcius ? 'active': ''}' onClick='app.toggleTempUnit(false)'>F</button>
+                <button class='toggle-btn ${this.state.isCelcius ? 'active': ''}' onclick='app.toggleTempUnit(true)'>°C</button>
+                <button class='toggle-btn ${!this.state.isCelcius ? 'active': ''}' onclick='app.toggleTempUnit(false)'>°F</button>
             </div>
 
             <div class='weather-details'>
                 <div class='detail-item'>
                     <h4 class='detail-label'>Humidity</h4>
-                    <p class='detail-value'>${weather.humidity.toFixed(0)}%</p>
+                    <p class='detail-value'>${weather.humidity}%</p>
                 </div>
                 <div class='detail-item'>
                     <h4 class='detail-label'>Wind</h4>
@@ -275,12 +303,110 @@ const app = {
                 </div>
                 <div class='detail-item'>
                     <h4 class='detail-label'>Snow</h4>
-                    <p class='detail-value'>${weather.snow ? weather.snow['1h'].toFixed(1) + 'mm': 'None'}</p>
+                    <p class='detail-value'>${weather.snow && weather.snow['1h'] ? weather.snow['1h'].toFixed(1) + 'mm' : 'None'}</p>
                 </div>
             </div>
-        `
+        `;
 
-        document.getElementById('weatherContent').innerHTML = weatherHTML;
+        document.getElementById('weather-content').innerHTML = weatherHTML;
+    },
+
+    toggleTempUnit(isCelcius) {
+        if (this.state.isCelcius === isCelcius) return;
+        this.state.isCelcius = isCelcius;
+        if (this.state.weatherData) {
+            this.displayWeather(this.state.weatherData);
+        }
+    },
+
+    showError(message) {
+        const container = document.getElementById('weather-content');
+        if (container) {
+            container.innerHTML = `<div class="error">${message}</div>`;
+        }
+        console.error(message);
+    },
+
+    initMap(lat, lon) {
+        if (this.state.map) {
+            this.state.map.remove();
+        }
+
+        this.state.map = L.map("map").setView([lat, lon], 10);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'OpenStreetMap Contributors'
+        }).addTo(this.state.map);
+
+        L.marker([lat, lon])
+            .addTo(this.state.map)
+            .bindPopup(`<b>${this.state.currentCity.name}</b> <br>${this.state.currentCity.country}`)
+            .openPopup();
+    },
+
+    loadFavourites() {
+        const stored = localStorage.getItem('winterFavourites');
+        if (stored) {
+            this.state.favorites = JSON.parse(stored);
+            this.updateFavouritesCount();
+        }
+    },
+
+    saveFavourites() {
+        localStorage.setItem('winterFavourites', JSON.stringify(this.state.favorites));
+        this.updateFavouritesCount();
+    },
+
+    toggleFavourite() {
+        if (!this.state.currentCity) return;
+
+        const cityKey = `${this.state.currentCity.name}-${this.state.currentCity.country}`;
+        const index = this.state.favorites.findIndex(
+            fav => `${fav.name}-${fav.country}` === cityKey
+        );
+
+        if (index > -1) {
+            // Remove from favourites
+            this.state.favorites.splice(index, 1);
+        } else {
+            // Add to favourites
+            this.state.favorites.push({
+                name: this.state.currentCity.name,
+                country: this.state.currentCity.country,
+                latitude: this.state.currentCity.latitude,
+                longitude: this.state.currentCity.longitude
+            });
+        }
+
+        this.saveFavourites();
+        this.updateFavouriteBtn();
+    },
+
+    updateFavouriteBtn() {
+        if (!this.state.currentCity) return;
+
+        const cityKey = `${this.state.currentCity.name}-${this.state.currentCity.country}`;
+        const isFavourite = this.state.favorites.some(
+            fav => `${fav.name}-${fav.country}` === cityKey
+        );
+
+        const btn = document.getElementById('favourite-btn');
+        const text = document.getElementById('favourite-text');
+        
+        if (isFavourite) {
+            text.textContent = 'Remove from favourites';
+            btn.style.background = 'rgba(255, 100, 100, 0.3)';
+        } else {
+            text.textContent = 'Add to favourites';
+            btn.style.background = '';
+        }
+    },
+
+    updateFavouritesCount() {
+        const countElement = document.getElementById('favourites-count');
+        if (countElement) {
+            countElement.textContent = this.state.favorites.length;
+        }
     }
 
 };

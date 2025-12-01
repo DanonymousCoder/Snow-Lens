@@ -30,7 +30,7 @@
                 </div>
 
                 <ul class="nav-links">
-                    <li><a href="#">Favourites(0)</a></li>
+                    <li><a href="#" id="favourites-link">Favourites(<span id="favourites-count">0</span>)</a></li>
                 </ul>
             </nav>
 
@@ -40,49 +40,26 @@
                     <p class="sub">Discover the perfect winter destination</p>
 
                     <div class="types">
-                        <a href="#" class="snow type-active">Snow</a>
-                        <a href="#" class="aurora">Aurora</a>
-                        <a href="#" class="frost">Frost</a>
+                        <a href="#" class="snow type-active" data-theme="snow">Snow</a>
+                        <a href="#" class="aurora" data-theme="aurora">Aurora</a>
+                        <a href="#" class="frost" data-theme="frost">Frost</a>
                     </div>
                 </div>
                 
                 <div class="input-section">
                     <input type="text" placeholder="Search for a winter destination" id="city-search" autocomplete="off">
 
-                    <div class="suggestions" id="suggestions"></div>
+                    <div class="suggestions hidden" id="suggestions"></div>
                 </div>
 
             </div>
         </header>
 
-        <main class="" id="content">
+        <main class="hidden" id="content">
             <div class="main-grid">
                 <div class="glass weather-card">
-                    <div class="weather-content">
-                        <div class='weather-icon'></div>
-            <h2>${this.state.currentCity.name}</h2>
-            <p>${weather.description}</p>
-            <div class='temperature'>${temp.toFixed(1)}${unit}</div>
-
-            <div class='temp-toggle'>
-                <button class='toggle-btn ${this.state.isCelcius ? 'active': ''}' onClick='app.toggleTempUnit(true)'>C</button>
-                <button class='toggle-btn ${!this.state.isCelcius ? 'active': ''}' onClick='app.toggleTempUnit(false)'>F</button>
-            </div>
-
-            <div class='weather-details'>
-                <div class='detail-item'>
-                    <h4 class='detail-label'>Humidity</h4>
-                    <p class='detail-value'>${weather.humidity.toFixed(0)}%</p>
-                </div>
-                <div class='detail-item'>
-                    <h4 class='detail-label'>Wind</h4>
-                    <p class='detail-value'>${weather.wind_speed.toFixed(1)} m/s</p>
-                </div>
-                <div class='detail-item'>
-                    <h4 class='detail-label'>Snow</h4>
-                    <p class='detail-value'>${weather.snow ? weather.snow['1h'].toFixed(1) + 'mm': 'None'}</p>
-                </div>
-            </div>
+                    <div class="weather-content" id="weather-content">
+                        
                     </div>
                 </div>
 
@@ -92,7 +69,7 @@
                 </div>
             </div>
 
-            <div>
+            <div class="gallery glass" id="gallerysection">
 
             </div>
 
@@ -100,8 +77,8 @@
                 <h2>Plan your trip</h2>
                 <div class="action-buttons">
                     <button>Generate trip plan</button>
-                    <button>
-                        <span>
+                    <button id="favourite-btn" onclick="app.toggleFavourite()">
+                        <span id="favourite-text">
                             Add to favourites
                         </span>
                     </button>
