@@ -407,6 +407,98 @@ const app = {
         if (countElement) {
             countElement.textContent = this.state.favorites.length;
         }
+    },
+
+    generateTripPlan() {
+        if (!this.state.currentCity || !this.state.weatherData) {
+            alert('Please select a city first!');
+            return;
+        }
+
+        const weather = this.state.weatherData;
+        const city = this.state.currentCity;
+        const temp = weather.temp;
+
+        let timing = ' ';
+        let packingList = [];
+        let activities = [];
+
+        if (temp < 0 && weather.snow) {
+            timing = 'Perfect snow conditions right now!!!';
+        } else if (temp < 5) {
+            timing = 'Cold enough, but wait for some snows';
+        } else {
+            timing = 'Too warm, wait for the winter weather';
+        }
+
+        packingList = [
+            'Winter coat',
+            'Warm boots',
+            'Gloves & hat',
+            'Scarf'
+        ];
+
+        if (temp < -10) {
+            packingList.push('Hand warmers');
+        }
+            
+        if (weather.snow) {
+            packingList.push('Ski gear');
+        }
+
+         activities = [
+            'Visit cozy cafés',
+            'Winter photography',
+            'Indoor museums'
+        ];
+        
+        if (weather.snow) {
+            activities.push('Skiing');
+            activities.push('Build snowmens');
+        }
+        
+        if (city.lat > 60) {
+            activities.push('Watch northern lights');
+        }
+
+        const planHTML = `
+            <h2>Trip Plan: ${city.name}</h2>
+
+            <h3>When to Go</h3>
+            <p style="font-size: 1.2em;">${timing}</p>
+            <p>Current: ${temp.toFixed(1)}°C, ${weather.snow ? 'Snowing' : 'No snow'}</p>
+
+            <h3>What to Pack</h3>
+            <ul>
+                ${packingList.map(item => `<li>${item}</li>`).join('')}
+            </ul>
+            
+            <h3>Things to Do</h3>
+            <ul>
+                ${activities.map(item => `<li>${item}</li>`).join('')}
+            </ul>
+            
+            <h3>Quick Tips</h3>
+            <ul>
+                <li>Book early for peak season</li>
+                <li>Check daily weather forecasts</li>
+                <li>Dress in layers</li>
+                ${city.lat > 60 ? '<li>Download aurora forecast app</li>' : ''}
+            </ul>
+            
+            <button onclick="app.closeModal()" 
+                    style="margin-top: 20px; padding: 12px 30px; background: white; 
+                            border: none; border-radius: 25px; cursor: pointer; font-size: 1em;">
+                Close
+            </button>
+        `;
+
+        document.getElementById('trip-plan').innerHTML = planHTML;
+        document.getElementById('trip-modal').classList.add('open');
+    },
+
+    closeModal() {
+        document.getElementById('trip-modal').classList.remove('open');
     }
 
 };

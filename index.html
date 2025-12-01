@@ -76,12 +76,21 @@
             <div class="glass plan">
                 <h2>Plan your trip</h2>
                 <div class="action-buttons">
-                    <button>Generate trip plan</button>
+                    <button onclick="app.generateTripPlan()">Generate trip plan</button>
                     <button id="favourite-btn" onclick="app.toggleFavourite()">
                         <span id="favourite-text">
                             Add to favourites
                         </span>
                     </button>
+                </div>
+            </div>
+
+            <div class="modal" id="trip-modal">
+                <div class="modal-content">
+                    <span class="modal-close" onclick="app.closeModal()">&times;</span>
+                    <div class="trip-plan" id="trip-plan">
+
+                    </div>
                 </div>
             </div>
         </main>
