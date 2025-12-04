@@ -1,6 +1,6 @@
 # Winter Lens
 ## A website that gives necessary information needed to plan before travelling
-## So, basically in my search for whaat to build I thought to myself to play around with API's and that birthed this. as you can see there is incosistency in the name of the repo and Website cause even sure what to name it yet, lol.
+### So, basically in my search for whaat to build I thought to myself to play around with API's and that birthed this. as you can see there is incosistency in the name of the repo and Website cause even sure what to name it yet, lol.
 
 ## Features
 * Current weather situation
